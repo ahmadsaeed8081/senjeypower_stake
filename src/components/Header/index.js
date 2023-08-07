@@ -209,7 +209,7 @@ async function Sign_out()
           <p>{matic} MATIC</p>
         </div>
         <div className="btn button">
-          <p>{balance} DAI</p>
+          <p>{balance} SPC</p>
         </div>
         <>
         {_address == null?(

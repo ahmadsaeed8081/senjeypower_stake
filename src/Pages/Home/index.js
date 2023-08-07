@@ -544,7 +544,7 @@ const Main = (props) => {
           return;
         }
         if (Number(withdraw_Amount) < 15) {
-          alert("You can't Withdraw less than 15 DAI");
+          alert("You can't Withdraw less than 15 SPC");
           return;
         }
         if (Number(withdraw_Amount) > Number(totalEarning)) {
@@ -603,7 +603,7 @@ const Main = (props) => {
                     }`}
                     onClick={(e) => setActiveTab("tab1")}
                   >
-                    Invest DAI
+                    Invest SPC
                   </div>
                   <div
                     className={`tab flex items-center justify-center ${
@@ -644,7 +644,7 @@ const Main = (props) => {
                         <div className="lbl">Expected Return</div>
                         <div className="val">
                           {Expected_return ? Expected_return.toFixed(2) : "0"}{" "}
-                          DAI
+                          SPC
                         </div>
                       </div>
                     </div>
@@ -673,18 +673,18 @@ const Main = (props) => {
                     <div className="info-list flex flex-col">
                       {/* <div className="item flex items-center justify-between">
                         <div className="lbl">Current Balance</div>
-                        <div className="val">456.00 DAI</div>
+                        <div className="val">456.00 SPC</div>
                       </div> */}
                       <div className="item flex items-center justify-between">
                         <div className="lbl">Balance After Withdraw</div>
                         <div className="val">
-                          {withdraw_Amount == "" ? 0 : after_Withdraw} DAI
+                          {withdraw_Amount == "" ? 0 : after_Withdraw} SPC
                         </div>
                       </div>
                       <div className="item flex items-center justify-between">
                         <div className="lbl">Total Withdraw</div>
                         <div className="val">
-                          {total_withdraw_reaward / 10 ** 18} DAI
+                          {total_withdraw_reaward / 10 ** 18} SPC
                         </div>
                       </div>
                     </div>
@@ -748,7 +748,7 @@ const Main = (props) => {
                         <div className="row-item flex flex-col">
                           <div className="row-lbl">Invested Amount</div>
                           <div className="row-val">
-                            {item[0] / 10 ** 18} DAI
+                            {item[0] / 10 ** 18} SPC
                           </div>
                         </div>
                         <div className="row-item flex flex-col">
@@ -758,7 +758,7 @@ const Main = (props) => {
                         <div className="row-item flex flex-col">
                           <div className="row-lbl">Total Earned</div>
                           <div className="row-val">
-                            {Allinvestment_earning[index]} DAI
+                            {Allinvestment_earning[index]} SPC
                           </div>
                         </div>
                         <div className="row-item flex flex-col">
@@ -809,7 +809,7 @@ const Main = (props) => {
                     <div className="row-lbl">No. of Refered Investors</div>
                   </div>
                   <div className="row-item flex flex-col">
-                    <div className="row-lbl">Total Earning (DAI)</div>
+                    <div className="row-lbl">Total Earning (SPC)</div>
                   </div>
                 </div>
                 {earningLit.map((item, index) => (
