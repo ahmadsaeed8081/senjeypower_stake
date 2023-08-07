@@ -280,7 +280,7 @@ async function Sign_out()
       <div className="wrapWidth wrap flex items-center">
         <div className="left flex items-center">
           <Link to={"/"}>
-            <img src="./images/sp-Logo.PNG" className="logo-img cursor-pointer" />
+            <img src="./images/sp-Logo.png" className="logo-img cursor-pointer" />
           </Link>
         </div>
         <div className="right flex items-center justify-end">
