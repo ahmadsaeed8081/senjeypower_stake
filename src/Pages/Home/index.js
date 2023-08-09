@@ -16,6 +16,7 @@ import { Padding } from "@mui/icons-material";
 import Countdown from "../../components/Countdown/Time";
 import { useContractReads,useContractRead ,useContractWrite, usePrepareContractWrite, useWaitForTransaction, usePublicClient } from 'wagmi'
 import {useNetwork,  useSwitchNetwork } from 'wagmi'
+import Header from "../../components/Header";
 
 import { useAccount, useDisconnect } from 'wagmi'
 
@@ -550,6 +551,7 @@ const waitForTransaction2 = useWaitForTransaction({
 
   return (
     <div>
+      <Header  balance={balance} />
       <div className="home-page flex flex-col">
         <div className="wrap wrapWidth flex">
           <div className="_block flex flex-col">

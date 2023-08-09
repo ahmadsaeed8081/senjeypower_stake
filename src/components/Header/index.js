@@ -18,7 +18,7 @@ const Header = (props) => {
   const [openMenu, setOpenMenu] = useState(false);
   const [openWalletList, setOpenWalletList] = useState(false);
   // const [_address, set_user_address] = useState(null);
-  const [balance, setBalance] = useState(0);
+  // const [balance, setBalance] = useState(0);
   const { address, isConnected,isDisconnected } = useAccount()
   const[clicked,set_clicked]=useState(false)
 
@@ -28,30 +28,29 @@ const Header = (props) => {
       setOpenWalletList(false);
     });
 
-    mount();  
   }, []);
 
 
-  async function mount() {
-    if (isDisconnected) {
-      return;
-    }      const web3= new Web3(new Web3.providers.HttpProvider("https://rpc.senjepowersscan.com"));
+  // async function mount() {
+  //   if (isDisconnected) {
+  //     return;
+  //   }      const web3= new Web3(new Web3.providers.HttpProvider("https://rpc.senjepowersscan.com"));
 
-      const balance = await web3.eth.getBalance(address);
+  //     const balance = await web3.eth.getBalance(address);
 
 
-      setBalance((balance/10**18).toFixed(6));
+  //     setBalance((balance/10**18).toFixed(6));
 
     
-  }
+  // }
 
   const Actions = () => {
     return (
       <div className="action flex items-center">
-{/* 
+
         <div className="btn button">
-          <p>{balance} SPC</p>
-        </div> */}
+          <p>{(props.balance/10**18).toFixed(6)} SPC</p>
+        </div>
         <>
         <button
               className="btn2 button"

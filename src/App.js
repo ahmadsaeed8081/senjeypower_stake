@@ -57,7 +57,7 @@ const ethereumClient = new EthereumClient(wagmiConfig, chains)
 
     <WagmiConfig config={wagmiConfig}>
 
-      <Header set_user={set_user}/>
+      {/* <Header set_user={set_user}/> */}
       <Routes>
         <Route path="/" element={<Main />} exact />
       </Routes>
