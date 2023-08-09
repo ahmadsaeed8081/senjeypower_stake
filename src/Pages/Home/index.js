@@ -7,8 +7,6 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import {
   cont_address,
   cont_abi,
-  tokenABI,
-  Token_address,
 } from "../../../src/components/config";
 import Web3 from "web3";
 import { useLocation } from "react-router-dom";
@@ -16,13 +14,20 @@ import { useLocation } from "react-router-dom";
 import { CopyIcon, BallIcon, MLNIcon, MLNIcon2, LockIcon } from "../../icons";
 import { Padding } from "@mui/icons-material";
 import Countdown from "../../components/Countdown/Time";
+import { useContractReads,useContractRead ,useContractWrite, usePrepareContractWrite, useWaitForTransaction, usePublicClient } from 'wagmi'
+import {useNetwork,  useSwitchNetwork } from 'wagmi'
+
+import { useAccount, useDisconnect } from 'wagmi'
 
 const Main = (props) => {
+
+  const { address, isConnecting ,isDisconnected} = useAccount()
+  const { chain } = useNetwork()
+
+
   const [open, setOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("tab1");
-  const [_address, setAddress] = useState(null);
   const [isWalletConnected, setisWalletConnected] = useState(false);
-  const [IDs, setNetworkID] = useState(false);
   const [investment, setInvestment] = useState("");
   const [ROI, set_ROI] = useState(0);
   const [Expected_return, set_Expected_return] = useState(0);
@@ -46,7 +51,7 @@ const Main = (props) => {
   const [totalbusiness, setbusiness] = useState("0");
 
   const [totalReferrals, settotalReferrals] = useState(0);
-  const [referral, setReferral] = useState("0");
+  const [referral, setReferral] = useState("0x0000000000000000000000000000000000000000");
   const [ref_from, set_ref_from] = useState("0");
 
   const [user, setUser] = useState("Connect your wallet");
@@ -60,13 +65,96 @@ const Main = (props) => {
     // bid_time: selectedAmount,
   });
 
-  const CHAIN_ID = "5";
-  const CHAIN_ID1 = "0x5";
+  const CHAIN_ID = "3699";
+  const CHAIN_ID1 = "0xe73";
 
+//   const { data:stakeResult, isLoading:isLoading_stake, isSuccess:stakeSuccess, write:invest } = useContractWrite({
+
+//     address: cont_abi,
+//   abi: cont_address,
+//   functionName: 'invest',
+//   args: [referral],
+//   value:((investment)*10**18),
+//   onSuccess(data) {
+//     // test();
+//     console.log('Success', data)
+//   },
+
+
+// })
+
+
+
+
+const { config:investConfig } = usePrepareContractWrite({
+  address: cont_address,
+  abi: cont_abi,
+  functionName: 'invest',
+  args: [referral],
+  value:((investment)*10**18).toString(),
+  onSuccess(data) {
+    mount();
+    console.log('Success', data)
+  },
+
+})
+const { data:stakeResult, isLoading2, isSuccess2, write:Investing } = useContractWrite(investConfig)
+
+
+
+
+const { config:claimRewardConfig } = usePrepareContractWrite({
+  address: cont_address,
+  abi: cont_abi,
+  functionName: 'withdrawReward',
+
+})
+const { data:stakeResult_withdrawReward, isLoading2_withdrawReward, isSuccess2_withdrawReward, write:withdrawReward } = useContractWrite(claimRewardConfig)
+
+
+
+
+const { chains, error, isLoading, pendingChainId, switchNetwork:reward_switch } =
+useSwitchNetwork({
+  chainId: CHAIN_ID1,
+  // throwForSwitchChainNotSupported: true,
+  onSuccess(){
+
+    withdrawReward?.()
+  }
+
+})
+
+const {switchNetwork:stake_switch } =
+useSwitchNetwork({
+  chainId: CHAIN_ID1,
+  // throwForSwitchChainNotSupported: true,
+  onSuccess(){
+
+    Investing?.()
+  }
+
+})
+
+const waitForTransaction = useWaitForTransaction({
+  hash: stakeResult?.hash,
+  onSuccess(data) {
+    mount();
+    console.log("Success", data);
+  },
+});
+
+const waitForTransaction2 = useWaitForTransaction({
+  hash: stakeResult_withdrawReward?.hash,
+  onSuccess(data) {
+    mount();
+    console.log("Success", data);
+  },
+});
   const earningLit = [
     {
       id: "1",
-      num: "20%",
+      num: "15%",
       count: ref_data1[0],
       earn: ref_data[0],
     },
@@ -78,19 +166,19 @@ const Main = (props) => {
     },
     {
       id: "3",
-      num: "3%",
+      num: "4%",
       count: ref_data1[2],
       earn: ref_data[2],
     },
     {
       id: "4",
-      num: "2%",
+      num: "3%",
       count: ref_data1[3],
       earn: ref_data[3],
     },
     {
       id: "5",
-      num: "1%",
+      num: "2%",
       count: ref_data1[4],
       earn: ref_data[4],
     },
@@ -126,33 +214,39 @@ const Main = (props) => {
     },
     {
       id: "11",
-      num: "1%",
-      count: ref_data1[4],
-      earn: ref_data[4],
+      num: "0.5%",
+      count: ref_data1[10],
+      earn: ref_data[10],
     },
     {
       id: "12",
-      num: "1%",
-      count: ref_data1[5],
-      earn: ref_data[5],
+      num: "0.5%",
+      count: ref_data1[11],
+      earn: ref_data[11],
     },
     {
       id: "13",
-      num: "1%",
-      count: ref_data1[6],
-      earn: ref_data[6],
+      num: "0.5%",
+      count: ref_data1[12],
+      earn: ref_data[12],
     },
     {
       id: "14",
-      num: "1%",
-      count: ref_data1[7],
-      earn: ref_data[7],
+      num: "0.5%",
+      count: ref_data1[13],
+      earn: ref_data[13],
     },
     {
       id: "15",
-      num: "1%",
-      count: ref_data1[8],
-      earn: ref_data[8],
+      num: "2%",
+      count: ref_data1[14],
+      earn: ref_data[14],
+    },
+    {
+      id: "16",
+      num: "3%",
+      count: ref_data1[15],
+      earn: ref_data[15],
     },
 
    
@@ -217,65 +311,66 @@ const Main = (props) => {
   };
 
   async function mount() {
-    if (!props.isWalletConnected) {
+    if (isDisconnected) {
       return;
     }
     try {
-      const web3 = new Web3(props.provider);
+      
+      const web3= new Web3(new Web3.providers.HttpProvider("https://rpc.senjepowersscan.com"));
 
-      const accounts = await web3.eth.getAccounts();
+      const balance = await web3.eth.getBalance(address);
+
 
       const networkId = await web3.eth.net.getId();
 
       const contract = new web3.eth.Contract(cont_abi, cont_address);
-      const contract1 = new web3.eth.Contract(tokenABI, Token_address);
 
       let totalReward = await contract.methods
         .getReward()
-        .call({ from: accounts[0].toString() });
-      console.log(accounts[0] + "iyts acc");
+        .call({ from: address.toString() });
+      console.log(address + "iyts acc");
 
       let total_earn = await contract.methods
         .get_Total_Earning()
-        .call({ from: accounts[0].toString() });
-      console.log(accounts[0] + "iyts acc");
+        .call({ from: address.toString() });
+      console.log(address + "iyts acc");
 
       var ref_data = await contract.methods
         .referralLevel_earning()
-        .call({ from: accounts[0].toString() }); //arrray
+        .call({ from: address.toString() }); //arrray
 
       const ref_data1 = await contract.methods
         .referralLevel_count()
-        .call({ from: accounts[0].toString() }); //array
+        .call({ from: address.toString() }); //array
 
       let totalInvest = await contract.methods
         .getTotalInvestment()
-        .call({ from: accounts[0].toString() });
+        .call({ from: address.toString() });
 
       const business = await contract.methods
         .totalbusiness()
-        .call({ from: accounts[0].toString() });
+        .call({ from: address.toString() });
 
       const totalReferral = await contract.methods
         .TotalReferrals()
-        .call({ from: accounts[0].toString() });
+        .call({ from: address.toString() });
 
       const total_withdraw_reaward = await contract.methods
         .total_withdraw_reaward()
-        .call({ from: accounts[0].toString() });
+        .call({ from: address.toString() });
 
       // const allInvestments = await contract.methods
       //   .getAllinvestments()
-      //   .call({ from: accounts[0].toString() });
+      //   .call({ from: address.toString() });
       const allInvestments = await contract.methods
       .getAllinvestments()
-      .call({ from: accounts[0].toString() });
+      .call({ from: address.toString() });
       let arr = [];
       for (let i = 0; i < allInvestments.length; i++) {
         console.log("helo " + allInvestments[i][3]);
         let Reward = await contract.methods
           .getReward_perInvestment(allInvestments[i][3])
-          .call({ from: accounts[0].toString() });
+          .call({ from: address.toString() });
         Reward = web3.utils.fromWei(Reward, "ether");
 
         arr[i] = Reward;
@@ -296,38 +391,35 @@ const Main = (props) => {
 
       const curr_time = await contract.methods.get_currTime().call(); //get stake
 
-      let balance = await contract1.methods.balanceOf(accounts[0]).call();
 
-      balance = web3.utils.fromWei(balance, "ether");
 
       minimum_investment = web3.utils.fromWei(minimum_investment, "ether");
 
       totalReward = web3.utils.fromWei(totalReward, "ether");
 
-      console.log("hiiii" + balance);
       if (id != null) {
+
+
         setReferral(id);
-        console.log("its id " + id);
       }
+      
+
       set_Allinvestment(all_Investments);
       set_curr_time(curr_time);
       setTotalInvestment(totalInvest);
       setwithrawableAmount(totalReward);
       set_minimum_investment(minimum_investment);
       set_total_withdraw_reaward(total_withdraw_reaward);
-      setBalance(balance);
       setisWalletConnected(true);
-      setAddress(accounts[0]);
       setbusiness(business);
       settotalReferrals(totalReferral);
       set_Ref_data(ref_data);
       set_Ref_data1(ref_data1);
       set_ref_from(ref_from[0]);
-      setUser(accounts[0]);
+      setBalance(balance);
+      setUser(address);
       console.log("its id " + id);
-      // Set web3, accounts, and contract to the state, and then proceed with an
-      // example of interacting with the contract's methods.
-      //this.setState({ web3, accounts, contract: instance }, this.runExample);
+
     } catch (error) {
       // Catch any errors for any of the above operations.
 
@@ -344,207 +436,100 @@ const Main = (props) => {
   }
 
   function find_Exp_earn(amount) {
-    if (amount >= 15 && amount <= 100) {
-      return (amount / 100) * 3 * 50;
-    } else if (amount > 100 && amount <= 300) {
-      return (amount / 100) * 3.5 * 50;
-    } else if (amount > 300 && amount <= 600) {
-      return (amount / 100) * 4 * 50;
-    } else if (amount > 600 && amount <= 1200) {
-      return (amount / 100) * 4.5 * 50;
-    } else if (amount > 1200 && amount <= 2400) {
-      return (amount / 100) * 5 * 50;
-    } else if (amount > 2400 && amount <= 5000) {
-      return (amount / 100) * 5.5 * 50;
-    } else if (amount > 5000 && amount <= 10000) {
-      return (amount / 100) * 6 * 50;
-    } else if (amount > 10000 && amount <= 20000) {
-      return (amount / 100) * 6.5 * 50;
-    } else if (amount > 20000 && amount <= 40000) {
-      return (amount / 100) * 7 * 50;
-    } else if (amount > 40000) {
-      return (amount / 100) * 7.5 * 50;
+
+    if (amount >= minimum_investment && amount <= 100) {
+      return (amount / 100) * 0.3 * 400;
+    } else if (amount > 100 && amount <= 200) {
+      return (amount / 100) * 0.35 * 400;
+    } else if (amount > 200 && amount <= 400) {
+      return (amount / 100) * 0.4 * 400;
+    } else if (amount > 400 && amount <= 800) {
+      return (amount / 100) * 0.45 * 400;
+    } else if (amount > 800 && amount <= 1600) {
+      return (amount / 100) * 0.5 * 400;
+    } else if (amount > 1600 && amount <= 5000) {
+      return (amount / 100) * 0.55 * 400;
+    } else if (amount > 5000) {
+      return (amount / 100) * 0.6 * 400;
     }
     return 0;
+
   }
 
   function find_Roi(amount) {
-    if (amount >= 15 && amount <= 100) {
-      return 3;
-    } else if (amount > 100 && amount <= 300) {
-      return 3.5;
-    } else if (amount > 300 && amount <= 600) {
+    if (amount >= minimum_investment && amount <= 100) {
+      return 0.3;
+    } else if (amount > 100 && amount <= 200) {
+      return 0.35;
+    } else if (amount > 200 && amount <= 400) {
       return 4;
-    } else if (amount > 600 && amount <= 1200) {
-      return 4.5;
-    } else if (amount > 1200 && amount <= 2400) {
-      return 5;
-    } else if (amount > 2400 && amount <= 5000) {
-      return 5.5;
-    } else if (amount > 5000 && amount <= 10000) {
-      return 6;
-    } else if (amount > 10000 && amount <= 20000) {
-      return 6.5;
-    } else if (amount > 20000 && amount <= 40000) {
-      return 7;
-    } else if (amount > 40000) {
-      return 7.5;
+    } else if (amount > 400 && amount <= 800) {
+      return 0.45;
+    } else if (amount > 800 && amount <= 1600) {
+      return 0.5;
+    } else if (amount > 1600 && amount <= 5000) {
+      return 0.55;
+    } else if (amount > 5000) {
+      return 0.6;
     }
     return 0;
   }
 
-  async function Invest(investment) {
-    if (props.isWalletConnected) {
-      const noReferral = "0x0000000000000000000000000000000000000000";
-      if (investment > 0) {
-        try {
-          let web3;
-          // Get network provider and web3 instance.
-          if (props.provider) {
-            web3 = new Web3(props.provider);
-            console.log("pro " + props.provider);
-
-            if (Number(balance) < Number(investment)) {
-              alert("you dont have enough balance to invest");
-              return;
-            } else if (Number(investment) < Number(minimum_investment)) {
-              alert("you can't stake less than " + minimum_investment);
-              return;
-            }
-          } else {
-            alert(
-              "its look like you dont have metmask extension installed in you browser"
-            );
-            return;
-          }
-
-          // Use web3 to get the user's accounts.
-          const accounts = await web3.eth.getAccounts();
-
-          // Get the contract instance.
-          const networkId = await web3.eth.net.getId();
-          // const tokenContract = tokenContractAddress;
-          //const investContract = InvestAddress;
-          console.log("its prop" + accounts[0]);
-          const temp = web3.utils.toWei(investment.toString(), "ether");
-
-          if (Number(totalReward) < Number(investment)) {
-            let temp1 = investment - totalReward;
-            const contractStake = new web3.eth.Contract(
-              tokenABI,
-              Token_address
-            );
-            temp1 = web3.utils.toWei(temp1.toString(), "ether");
-
-            let balance = await contractStake.methods
-              .approve(cont_address, temp1)
-              .send({ from: accounts[0] });
-            if (!balance) {
-              return;
-            }
-          }
-
-          if (referral == "0") {
-            console.log("without referral" + temp);
-
-            const contract = new web3.eth.Contract(cont_abi, cont_address);
-
-            const result = await contract.methods
-              .invest(temp, noReferral)
-              .send({ from: accounts[0] });
-            if (result) 
-            {
-              console.log("hello transaction approved" + result);
-              
-              await mount();
-              await mount();
-              await mount();
-              await mount();
-              await mount();
-              await mount();
-              await mount();
-              await mount();
-              await mount();
-              await mount();
-
-
-
-            }
-          } else
-           {
-            console.log("with referral" + temp);
-
-            const contract = new web3.eth.Contract(cont_abi, cont_address);
-            const result = await contract.methods
-              .invest(temp, referral)
-              .send({ from: accounts[0] });
-            if (result) {
-              console.log("hello transaction approved" + result);
-              await mount();
-              await mount();
-              await mount();
-              await mount();
-              await mount();
-              await mount();
-              await mount();
-              await mount();
-              await mount();
-              await mount();
-
-              
-             
-
-            }
-          }
-        } catch (error) {
-          // Catch any errors for any of the above operations.
-
-          console.error(error);
-        }
-      } else if (investment <= 0 || investment == "") {
-        alert("please write amount ");
-      }
-    } else {
+  async function Invest() {
+    if (isDisconnected) {
       alert("kindly connect your wallet");
+      return
+
     }
+    if (investment <= 0 || investment == "") {
+      alert("please write amount ");
+      return
+    }
+
+    if (Number(balance) < Number(investment*10**18)) {
+      alert("you dont have enough balance to invest");
+      return;
+    } 
+    if (Number(investment) < Number(minimum_investment)) {
+      alert("you can't stake less than " + minimum_investment);
+      return;
+    }
+    console.log("object invest "+ minimum_investment);
+
+    if (chain.id != CHAIN_ID) {
+      stake_switch?.();
+    } else {
+
+      Investing?.()
+    }
+
+
+
+
+
   }
   // props.provider.on('chainChanged', hello);
   // props.provider.ethereum.on('accountsChanged', hello )
 
-  function hello() {
-    window.location.reload();
-  }
-  async function getRew(id) {
-    let web3;
+  // function hello() {
+  //   window.location.reload();
+  // }
 
-    web3 = new Web3(props.provider);
-    const accounts = await web3.eth.getAccounts();
-
-    // Get the contract instance.
-    const networkId = await web3.eth.net.getId();
-    const contract = new web3.eth.Contract(cont_abi, cont_address);
-
-    const reaward_per_investment = await contract.methods
-      .getReward_perInvestment(id)
-      .call({ from: accounts[0].toString() });
-    return reaward_per_investment;
-  }
 
   async function WithdrawReward() {
-    if (isWalletConnected) {
-      try {
-        let web3;
-        // Get network provider and web3 instance.
-        if (props.provider) {
-          web3 = new Web3(props.provider);
-        } else {
-          alert(
-            "its look like you dont have metmask extension installed in you browser"
-          );
-          return;
+
+
+        if (isDisconnected) {
+          alert("kindly connect your wallet");
+          return
+    
         }
-        if (Number(withdraw_Amount) < 15) {
-          alert("You can't Withdraw less than 15 SPC");
+        if (withdraw_Amount <= 0 || withdraw_Amount == "") {
+          alert("please write amount ");
+          return
+        }
+        if (Number(totalEarning)==0) {
+          alert("You don't have earning to withdraw");
           return;
         }
         if (Number(withdraw_Amount) > Number(totalEarning)) {
@@ -553,40 +538,14 @@ const Main = (props) => {
         }
 
         // Use web3 to get the user's accounts.
-        const accounts = await web3.eth.getAccounts();
+        if (chain.id != CHAIN_ID) {
+          reward_switch?.();
+        } else {
+          console.log("object withdraw");
 
-        // Get the contract instance.
-        const networkId = await web3.eth.net.getId();
-        // const tokenContract = tokenContractAddress;
-        //const investContract = InvestAddress;
-
-        const contract = new web3.eth.Contract(cont_abi, cont_address);
-        const temp = web3.utils.toWei(withdraw_Amount.toString(), "ether");
-        const result = await contract.methods
-          .withdrawReward(temp)
-          .send({ from: accounts[0] });
-        if (result) {
-          await mount();
-          await mount();
-          await mount();
-          await mount();
-          await mount();
-          await mount();
-          await mount();
-          await mount();
-          await mount();
-          await mount();
+          withdrawReward?.()
         }
-      } catch (error) {
-        // Catch any errors for any of the above operations.
-        // alert(
-        //   `Failed to load web3, accounts, or contract. Check console for details.`
-        // );
-        console.error(error);
-      }
-    } else {
-      alert("kindly connect your wallet");
-    }
+
   }
 
   return (
@@ -628,13 +587,13 @@ const Main = (props) => {
                           set_Expected_return(find_Exp_earn(e.target.value));
                         }}
                         placeholder="0"
-                        min="2"
+                        min={minimum_investment}
                       />
                     </div>
                     <div className="info-list flex flex-col">
                       <div className="item flex items-center justify-between">
                         <div className="lbl">Plan Duration</div>
-                        <div className="val">50 Days</div>
+                        <div className="val">400 Days</div>
                       </div>
                       <div className="item flex items-center justify-between">
                         <div className="lbl">Expected ROI</div>
@@ -650,7 +609,7 @@ const Main = (props) => {
                     </div>
                     <div
                       className="btn button"
-                      onClick={() => Invest(investment)}
+                      onClick={() => Invest()}
                     >
                       Invest Amount
                     </div>
@@ -663,7 +622,7 @@ const Main = (props) => {
                         type="number"
                         className="txt cleanbtn"
                         value={withdraw_Amount}
-                        min="6"
+                        min={minimum_investment}
                         onChange={(e) => {
                           set_withdraw_Amount(e.target.value);
                           cal_after_withdraw(e.target.value);
@@ -688,7 +647,9 @@ const Main = (props) => {
                         </div>
                       </div>
                     </div>
-                    <div className="btn button" onClick={WithdrawReward}>
+                    <div className="btn button" 
+                    onClick={WithdrawReward}
+                    >
                       Withdraw Amount
                     </div>
                   </div>
@@ -720,7 +681,7 @@ const Main = (props) => {
                     <div className="flex items-center">
                       <div className="lbl flex">My Link</div>
                       <CopyToClipboard
-                        text={`https://turbostocks.world/?ref=${_address}`}
+                        text={`https://senjeypower-stake.vercel.app/?ref=${address}`}
                       >
                         <button className="copy-icon flex items-center justify-center ml-5">
                           <CopyIcon />
@@ -728,10 +689,10 @@ const Main = (props) => {
                       </CopyToClipboard>
                     </div>
                     <div className="link">
-                      https://turbostocks.world/?ref=
-                      {_address == null
+                      https://senjepower-stake.com/?ref=
+                      {address == null
                         ? "..."
-                        : _address.toString().slice(0, 4) + "..."}
+                        : address.toString().slice(0, 4) + "..."}
                     </div>
                   </div>
                 </div>

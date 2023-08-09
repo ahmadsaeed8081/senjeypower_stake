@@ -7,10 +7,18 @@ import "./css/App.scss";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Sidebar from "./components/Sidebar";
-
+import {SPC} from "./components/SPC.ts"
 import Main from "./Pages/Home";
 
+import { EthereumClient, w3mConnectors, w3mProvider } from '@web3modal/ethereum'
+import { Web3Modal } from '@web3modal/react'
+import { configureChains, createConfig, WagmiConfig } from 'wagmi'
+import { polygonMumbai} from 'wagmi/chains'
+
+
+
 import Web3 from "web3";
+
 const web3 = new Web3(Web3.givenProvider);
 
 function App() {
@@ -19,6 +27,20 @@ function App() {
   const [provider, set_provider] = useState(null);
   
   const [isWalletConnected, set_isWalletConnected] = useState(false);
+
+
+  const chains = [SPC]
+const projectId = '9dc66ab4d76b28b1a452d5dc0083e466'
+
+const { publicClient } = configureChains(chains, [w3mProvider({ projectId })])
+const wagmiConfig = createConfig({
+  autoConnect: true,
+  connectors: w3mConnectors({ projectId, chains }),
+  publicClient
+})
+const ethereumClient = new EthereumClient(wagmiConfig, chains)
+
+
 
 
   function set_user(_add,_provider,_web3){
@@ -32,12 +54,20 @@ function App() {
 
   return (
     <div className="App">
+
+    <WagmiConfig config={wagmiConfig}>
+
       <Header set_user={set_user}/>
       <Routes>
-        <Route path="/" element={<Main web3={web3} provider={provider} isWalletConnected={isWalletConnected}/>} exact />
+        <Route path="/" element={<Main />} exact />
       </Routes>
       {/* <Footer /> */}
-    </div>
+    </WagmiConfig>
+
+<Web3Modal projectId={projectId} ethereumClient={ethereumClient} />
+</div>
+
+
   );
 }
 

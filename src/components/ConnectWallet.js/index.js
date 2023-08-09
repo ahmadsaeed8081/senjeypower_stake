@@ -1,10 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useRef } from "react";
-import { cont_address, cont_abi } from "../config";
-import Web3 from "web3";
-import WalletConnectProvider from "@walletconnect/web3-provider";
-import { providers } from "ethers";
-import { Provider } from "web3modal";
+
 
 
 
